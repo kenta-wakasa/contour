@@ -36,8 +36,10 @@ function convertToGrayScale(base64Image, point) {
         cv.CV_8UC3,
         new cv.Scalar(255, 255, 255)
       );
-      console.log(contours);
       for (let i = 0; i < contours.size(); ++i) {
+        let contour = contours.get(i);
+        let pathData = createSVGPath(contour);
+        console.log(pathData);
         let color = new cv.Scalar(255, 0, 0);
         cv.drawContours(
           dst,
@@ -68,4 +70,15 @@ function convertToGrayScale(base64Image, point) {
     };
     img.onerror = reject;
   });
+}
+
+function createSVGPath(contour) {
+  let pathData = "M";
+  for (let i = 0; i < contour.data32S.length; i += 2) {
+    let x = contour.data32S[i];
+    let y = contour.data32S[i + 1];
+    pathData += `${x},${y} `;
+  }
+  pathData += "Z";
+  return pathData;
 }
