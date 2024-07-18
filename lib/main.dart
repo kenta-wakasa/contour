@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:js/js_util.dart';
 
-import 'js/my_javascript.dart';
+import 'contour/contour_export.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,12 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () async {
                 final imageBytes =
                     await rootBundle.load('assets/flutter_logo.png');
-                final srcBase64 = base64Encode(imageBytes.buffer.asUint8List());
-                final tmpBase64 =
-                    await promiseToFuture(convertToGrayScale(srcBase64, 50));
-                final greyBase64 =
-                    await promiseToFuture(convertToGrayScale(tmpBase64, 5));
-                grey = base64Decode(greyBase64);
+                grey =
+                    await generateContourImage(imageBytes.buffer.asUint8List());
                 setState(() {});
               },
               child: const Text('変換'),
@@ -71,12 +64,16 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Image.asset('assets/flutter_logo.png'),
             ),
             const SizedBox(height: 16),
-            if (grey != null)
-              SizedBox(
-                width: 120,
-                height: 120,
-                child: Image.memory(grey!),
+            SizedBox(
+              width: 120,
+              height: 120,
+              child: Stack(
+                children: [
+                  Image.asset('assets/flutter_logo.png'),
+                  if (grey != null) Image.memory(grey!),
+                ],
               ),
+            ),
           ],
         ),
       ),
